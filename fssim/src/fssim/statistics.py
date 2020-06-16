@@ -108,6 +108,8 @@ class LapStaticstic:
             cross_line = intersect(self.start_A, self.start_B, to_point(self.last_state), to_point(state))
             if cross_line:
                 self.lap_count = self.lap_count + 1
+                if self.lap_count > self.max_lap_count:
+                    self.last_state.vx = 0.0
                 if self.lap_count == 1:
                     self.starting_time = rospy.get_rostime().to_sec()
                     self.res_go_time = rospy.get_rostime().to_sec()
