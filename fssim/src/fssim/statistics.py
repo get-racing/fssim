@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 # ROS Include
+import rospkg
 import rospy
 
 # Numpy
@@ -76,7 +77,7 @@ class LapStaticstic:
         self.res_go_time = 0.0
         self.lap_time = []
 
-        with open("/jarvic-mono/src/fssim_interface/fssim_config/ats_simulation.yaml", 'r') as f:
+        with open(rospkg.RosPack().get_path('fssim') + '/config/simulation.yaml'), 'r') as f:
             self.sim_config = yaml.load(f)
             self.max_lap_count = self.sim_config['max_lap_count']
         if folder is None:
