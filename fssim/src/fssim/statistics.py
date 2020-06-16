@@ -75,6 +75,10 @@ class LapStaticstic:
         self.starting_time = 0.0
         self.res_go_time = 0.0
         self.lap_time = []
+
+        with open("/jarvic-mono/src/fssim_interface/fssim_config/ats_simulation.yaml", 'r') as f:
+            self.sim_config = yaml.load(f)
+            self.max_lap_count = self.sim_config['max_lap_count']
         if folder is None:
             self.report_file_name = None
         else:
@@ -84,13 +88,13 @@ class LapStaticstic:
 
     def request_stop(self):
         if self.mission == 'trackdrive':
-            return self.lap_count > 110
+            return self.lap_count > self.max_lap_count
         return False
 
     def is_mission_finnished(self):
         if self.mission == 'trackdrive':
             rospy.logwarn("Lap Count: %i, speed: %f", self.lap_count, self.last_state.vx)
-            return self.lap_count == 11 and self.last_state.vx <= 1.5
+            return self.lap_count == self.max_lap_count and self.last_state.vx <= 1.5
         elif self.mission == 'acceleration':
             rospy.logwarn("State x: %f", self.last_state.x)
             return self.last_state.x > 76 and self.last_state.x < 120 and len(self.lap_time) is not 0
