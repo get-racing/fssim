@@ -89,7 +89,7 @@ class LapStaticstic:
 
     def request_stop(self):
         if self.mission == 'trackdrive':
-            return self.lap_count >= self.max_lap_count
+            return self.lap_count > self.max_lap_count
         return False
 
     def is_mission_finnished(self):
@@ -109,8 +109,6 @@ class LapStaticstic:
             cross_line = intersect(self.start_A, self.start_B, to_point(self.last_state), to_point(state))
             if cross_line:
                 self.lap_count = self.lap_count + 1
-                #if self.lap_count > self.max_lap_count:
-                #    self.last_state.vx = 0.0
                 if self.lap_count == 1:
                     self.starting_time = rospy.get_rostime().to_sec()
                     self.res_go_time = rospy.get_rostime().to_sec()
@@ -121,6 +119,10 @@ class LapStaticstic:
                     rospy.logwarn("LAP Time: %f", self.lap_time[-1])
 
                 rospy.logwarn("LAP: %i", self.lap_count)
+                if self.lap_count > self.max_lap_count:
+                    self.vx = 0.0
+                    self.vy = 0.0
+                    self.vel_avg = 0
         elif self.mission == 'acceleration':
             cross_line_start = intersect(self.start_A, self.start_B, to_point(self.last_state), to_point(state))
             cross_line_end = intersect(self.end_A, self.end_B, to_point(self.last_state), to_point(state))
