@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 # ROS Include
+import rospkg
 import rospy
 
 # Numpy
@@ -75,6 +76,10 @@ class LapStaticstic:
         self.starting_time = 0.0
         self.res_go_time = 0.0
         self.lap_time = []
+        
+        with open(rospkg.RosPack().get_path('fssim') + '/config/simulation.yaml', 'r') as f:
+            self.sim_config = yaml.load(f)
+            self.max_lap_count = self.sim_config['max_lap_count']
         if folder is None:
             self.report_file_name = None
         else:
@@ -84,13 +89,13 @@ class LapStaticstic:
 
     def request_stop(self):
         if self.mission == 'trackdrive':
-            return self.lap_count > 110
+            return self.lap_count > self.max_lap_count
         return False
 
     def is_mission_finnished(self):
         if self.mission == 'trackdrive':
             rospy.logwarn("Lap Count: %i, speed: %f", self.lap_count, self.last_state.vx)
-            return self.lap_count == 11 and self.last_state.vx <= 1.5
+            return self.lap_count >= self.max_lap_count and self.last_state.vx <= 1.5
         elif self.mission == 'acceleration':
             rospy.logwarn("State x: %f", self.last_state.x)
             return self.last_state.x > 76 and self.last_state.x < 120 and len(self.lap_time) is not 0
@@ -114,6 +119,10 @@ class LapStaticstic:
                     rospy.logwarn("LAP Time: %f", self.lap_time[-1])
 
                 rospy.logwarn("LAP: %i", self.lap_count)
+                if self.lap_count > self.max_lap_count:
+                    self.vx = 0.0
+                    self.vy = 0.0
+                    self.vel_avg = 0
         elif self.mission == 'acceleration':
             cross_line_start = intersect(self.start_A, self.start_B, to_point(self.last_state), to_point(state))
             cross_line_end = intersect(self.end_A, self.end_B, to_point(self.last_state), to_point(state))
