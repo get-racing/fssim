@@ -123,6 +123,9 @@ class LapStaticstic:
                     self.vx = 0.0
                     self.vy = 0.0
                     self.vel_avg = 0
+                    state.vx = 0
+                    state.vy = 0
+                    request_stop();
         elif self.mission == 'acceleration':
             cross_line_start = intersect(self.start_A, self.start_B, to_point(self.last_state), to_point(state))
             cross_line_end = intersect(self.end_A, self.end_B, to_point(self.last_state), to_point(state))
