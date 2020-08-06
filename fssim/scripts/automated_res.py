@@ -86,7 +86,7 @@ class AutomatedRes:
     def __init__(self, arg):
 
         # Use sim clock
-        rospy.set_param('/use_sim_time', 'true')
+        rospy.set_param('/use_sim_time', 'false')
 
         # TF Initializations
         self.listener = tf.TransformListener()
@@ -176,7 +176,7 @@ class AutomatedRes:
             self.br.sendTransform(t)
 
         # Wait for short time
-        rospy.sleep(5.0)
+        rospy.sleep(2.0)
 
         # Launch Autonomous System
         self.cmd_autonomous_system = self.launch_file(
@@ -189,7 +189,7 @@ class AutomatedRes:
             self.cmd_rosbag = self.launch_file(raw_rosbag_launch_cmd.format(gen_rosbag_name))
 
         # Wait for short time
-        rospy.sleep(5.0)
+        rospy.sleep(2.0)
 
         rate = rospy.Rate(10)
         while not rospy.is_shutdown():
@@ -230,8 +230,8 @@ class AutomatedRes:
                 rospy.logwarn("Sending EMERGENCY STOP")
                 self.send_res(False)
 
-                # This sleeps ensures that there is still at least 5s of rosbag available
-                rospy.sleep(5.0)
+                # This sleeps ensures that there is still at least 2s of rosbag available
+                rospy.sleep(2.0)
 
                 # Request shutdown of all commands
                 self.sim_health.request_shutdown = True
